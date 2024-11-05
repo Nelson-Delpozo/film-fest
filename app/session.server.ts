@@ -37,7 +37,7 @@ export async function getUser(request: Request) {
   const userId = await getUserId(request);
   if (userId === undefined) return null;
 
-  const user = await getUserById(userId);
+  const user = await getUserById(String(userId));
   if (user) return user;
 
   throw await logout(request);
@@ -58,7 +58,7 @@ export async function requireUserId(
 export async function requireUser(request: Request) {
   const userId = await requireUserId(request);
 
-  const user = await getUserById(userId);
+  const user = await getUserById(String(userId));
   if (user) return user;
 
   throw await logout(request);

@@ -3,7 +3,8 @@ import bcrypt from "bcrypt";
 
 import { prisma } from "~/db.server";
 
-export async function createUser(email: string, password: string, status = "active") {
+
+export async function createUser(email: string, password: string, status = "new") {
   try {
     return await prisma.user.create({
       data: {
@@ -18,10 +19,10 @@ export async function createUser(email: string, password: string, status = "acti
   }
 }
 
-export async function getUserById(id: number) {
+export async function getUserById(id: string) {
   try {
     const user = await prisma.user.findUnique({
-      where: { id },
+      where: { id: parseInt(id, 10) }, // Ensure the ID is parsed correctly if needed
     });
     if (!user) {
       throw new Error("User not found");
