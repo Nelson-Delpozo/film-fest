@@ -1,7 +1,7 @@
 // app/routes/list.tsx
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Form, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 
 import { prisma } from "~/db.server";
@@ -49,7 +49,7 @@ export default function List() {
   // Export selected data as CSV
   const exportCSV = () => {
     const selectedRespondents = sortedRespondents.filter((row) =>
-      selectedRows.includes(row.email)
+      selectedRows.includes(row.email),
     );
 
     const csvContent = [
@@ -72,7 +72,7 @@ export default function List() {
     setSelectedRows((prevSelected) =>
       prevSelected.includes(email)
         ? prevSelected.filter((row) => row !== email)
-        : [...prevSelected, email]
+        : [...prevSelected, email],
     );
   };
 
@@ -87,18 +87,18 @@ export default function List() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-yellow-600 px-4 py-8 flex flex-col items-center">
-      <h1 className="text-2xl font-bold mb-4">Respondents List</h1>
-      <div className="flex space-x-4 mb-4">
+    <div className="flex min-h-screen flex-col items-center bg-black px-4 py-8 text-yellow-600">
+      <h1 className="mb-4 text-2xl font-bold">Respondents List</h1>
+      <div className="mb-4 flex space-x-4">
         <button
           onClick={toggleSortOrder}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
         >
           Sort by {isAscending ? "Newest" : "Oldest"}
         </button>
         <button
           onClick={exportCSV}
-          className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600"
         >
           Export as CSV
         </button>
@@ -107,7 +107,7 @@ export default function List() {
         <table className="w-full border border-gray-700 bg-gray-800 text-left">
           <thead>
             <tr>
-              <th className="p-2 border-b border-gray-700 text-yellow-600">
+              <th className="border-b border-gray-700 p-2 text-yellow-600">
                 <input
                   type="checkbox"
                   checked={isSelectAllChecked}
@@ -115,14 +115,18 @@ export default function List() {
                   className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
               </th>
-              <th className="p-2 border-b border-gray-700 text-yellow-600">Email</th>
-              <th className="p-2 border-b border-gray-700 text-yellow-600">Created Date</th>
+              <th className="border-b border-gray-700 p-2 text-yellow-600">
+                Email
+              </th>
+              <th className="border-b border-gray-700 p-2 text-yellow-600">
+                Created Date
+              </th>
             </tr>
           </thead>
           <tbody>
             {sortedRespondents.map((respondent, index) => (
               <tr key={index} className="even:bg-gray-700">
-                <td className="p-2 border-b border-gray-700">
+                <td className="border-b border-gray-700 p-2">
                   <input
                     type="checkbox"
                     checked={selectedRows.includes(respondent.email)}
@@ -130,23 +134,25 @@ export default function List() {
                     className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                   />
                 </td>
-                <td className="p-2 border-b border-gray-700">{respondent.email}</td>
-                <td className="p-2 border-b border-gray-700">{respondent.createdAt}</td>
+                <td className="border-b border-gray-700 p-2">
+                  {respondent.email}
+                </td>
+                <td className="border-b border-gray-700 p-2">
+                  {respondent.createdAt}
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
       <footer className="w-full border-t border-gray-700 py-4 text-center text-gray-800">
-        <p className="text-sm">
-          &copy; {new Date().getFullYear()}{" "}
-          <Link to="/" className="text-gray-800 underline">
-            MNFF
-          </Link>
-        </p>
-        <Link to="/logout" className="mt-1 block text-gray-800 underline">
+        <p className="text-sm">&copy; {new Date().getFullYear()} </p>
+        {/* <Link to="/logout" className="mt-1 block text-gray-800 underline">
           Logout
-        </Link>
+        </Link> */}
+        <Form action="/logout" method="post">
+          <button type="submit">Log out</button>
+        </Form>
       </footer>
     </div>
   );
