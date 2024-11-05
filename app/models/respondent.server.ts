@@ -25,6 +25,17 @@ export async function getRespondentById(id: number) {
   }
 }
 
+export async function getRespondentByEmail(email: string) {
+  try {
+    return await prisma.respondent.findUnique({
+      where: { email },
+    });
+  } catch (error) {
+    console.error("Error retrieving respondent:", error);
+    throw new Error("Failed to retrieve respondent.");
+  }
+}
+
 export async function getAllRespondents() {
   try {
     return await prisma.respondent.findMany();

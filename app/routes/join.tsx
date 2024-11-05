@@ -85,13 +85,17 @@ export default function Join() {
   }, [actionData]);
 
   return (
-    <div className="flex min-h-full flex-col justify-center">
+    <div className="flex min-h-full flex-col justify-center bg-black text-yellow-600">
       <div className="mx-auto w-full max-w-md px-8">
+      <header className="text-center mb-8">
+        <h1 className="text-4xl font-bold mb-2">MNFF</h1>
+        <h2 className="text-xl font-light">this one&apos;s gonna hit different</h2>
+      </header>
         <Form method="post" className="space-y-6">
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-yellow-600"
             >
               Email address
             </label>
@@ -120,7 +124,7 @@ export default function Join() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-medium text-yellow-600"
             >
               Password
             </label>
