@@ -20,11 +20,15 @@ export async function createUser(email: string, password: string, status = "acti
 
 export async function getUserById(id: number) {
   try {
-    return await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id },
     });
+    if (!user) {
+      throw new Error("User not found");
+    }
+    return user;
   } catch (error) {
-    console.error("Error retrieving user by ID:", error);
+    console.error("Failed to retrieve user:", error);
     throw new Error("Failed to retrieve user.");
   }
 }
