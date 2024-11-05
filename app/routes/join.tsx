@@ -63,7 +63,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     redirectTo,
     remember: false,
     request,
-    userId: user.id,
+    userId: user.id.toString(),
   });
 };
 

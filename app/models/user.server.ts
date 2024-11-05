@@ -1,63 +1,89 @@
-import type { Password, User } from "@prisma/client";
-import bcrypt from "bcryptjs";
+// app/models/user.server.ts
+import bcrypt from "bcrypt";
 
 import { prisma } from "~/db.server";
 
-export type { User } from "@prisma/client";
-
-export async function getUserById(id: User["id"]) {
-  return prisma.user.findUnique({ where: { id } });
-}
-
-export async function getUserByEmail(email: User["email"]) {
-  return prisma.user.findUnique({ where: { email } });
-}
-
-export async function createUser(email: User["email"], password: string) {
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  return prisma.user.create({
-    data: {
-      email,
-      password: {
-        create: {
-          hash: hashedPassword,
-        },
+export async function createUser(email: string, password: string, status = "active") {
+  try {
+    return await prisma.user.create({
+      data: {
+        email,
+        password,
+        status,
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    throw new Error("Failed to create user.");
+  }
 }
 
-export async function deleteUserByEmail(email: User["email"]) {
-  return prisma.user.delete({ where: { email } });
+export async function getUserById(id: number) {
+  try {
+    return await prisma.user.findUnique({
+      where: { id },
+    });
+  } catch (error) {
+    console.error("Error retrieving user by ID:", error);
+    throw new Error("Failed to retrieve user.");
+  }
 }
 
-export async function verifyLogin(
-  email: User["email"],
-  password: Password["hash"],
-) {
-  const userWithPassword = await prisma.user.findUnique({
-    where: { email },
-    include: {
-      password: true,
-    },
-  });
-
-  if (!userWithPassword || !userWithPassword.password) {
-    return null;
+export async function getUserByEmail(email: string) {
+  try {
+    return await prisma.user.findUnique({
+      where: { email },
+    });
+  } catch (error) {
+    console.error("Error retrieving user by email:", error);
+    throw new Error("Failed to retrieve user.");
   }
+}
 
-  const isValid = await bcrypt.compare(
-    password,
-    userWithPassword.password.hash,
-  );
-
-  if (!isValid) {
-    return null;
+export async function updateUserStatus(id: number, status: string) {
+  try {
+    return await prisma.user.update({
+      where: { id },
+      data: { status },
+    });
+  } catch (error) {
+    console.error("Error updating user status:", error);
+    throw new Error("Failed to update user status.");
   }
+}
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { password: _password, ...userWithoutPassword } = userWithPassword;
+export async function deleteUser(id: number) {
+  try {
+    return await prisma.user.delete({
+      where: { id },
+    });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw new Error("Failed to delete user.");
+  }
+}
 
-  return userWithoutPassword;
+export async function verifyLogin(email: string, password: string) {
+  try {
+    // Find the user by email
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return null; // User not found
+    }
+
+    // Compare the provided password with the stored hashed password
+    const isValid = await bcrypt.compare(password, user.password);
+
+    if (!isValid) {
+      return null; // Password does not match
+    }
+
+    return user; // Successful login
+  } catch (error) {
+    console.error("Error during login verification:", error);
+    throw new Error("Failed to verify login.");
+  }
 }

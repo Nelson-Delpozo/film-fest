@@ -28,10 +28,20 @@ export default function App() {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com"></link>
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Michroma&display=swap"
+          rel="stylesheet"
+        />
         <Meta />
         <Links />
       </head>
-      <body className="h-full">
+      <body className="h-full font-sans">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

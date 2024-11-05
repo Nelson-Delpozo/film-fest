@@ -58,7 +58,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     redirectTo,
     remember: remember === "on" ? true : false,
     request,
-    userId: user.id,
+    userId: user.id.toString(),
   });
 };
 
