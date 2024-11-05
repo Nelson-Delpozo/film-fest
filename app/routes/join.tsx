@@ -8,8 +8,8 @@ import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { useEffect, useRef } from "react";
 
 import { createUser, getUserByEmail } from "~/models/user.server";
-import { createUserSession, getUserId } from "~/session.server";
-import { safeRedirect, validateEmail } from "~/utils";
+import { getUserId, clearSessionAfterRegistration } from "~/session.server";
+import { validateEmail } from "~/utils";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await getUserId(request);
@@ -21,7 +21,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
 
   if (!validateEmail(email)) {
     return json(
@@ -56,15 +55,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       { status: 400 },
     );
   }
+  
+  await createUser(email, password);
 
-  const user = await createUser(email, password);
-
-  return createUserSession({
-    redirectTo,
-    remember: false,
-    request,
-    userId: user.id.toString(),
-  });
+  return clearSessionAfterRegistration(request);
 };
 
 export const meta: MetaFunction = () => [{ title: "Sign Up" }];

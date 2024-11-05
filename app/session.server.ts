@@ -4,7 +4,6 @@ import invariant from "tiny-invariant";
 
 import { getUserById } from "~/models/user.server";
 
-
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
 export const sessionStorage = createCookieSessionStorage({
@@ -64,6 +63,7 @@ export async function requireUser(request: Request) {
   throw await logout(request);
 }
 
+// Create a user session, but the cookie will not persist if `remember` is false
 export async function createUserSession({
   request,
   userId,
@@ -80,15 +80,28 @@ export async function createUserSession({
   return redirect(redirectTo, {
     headers: {
       "Set-Cookie": await sessionStorage.commitSession(session, {
-        maxAge: remember
-          ? 60 * 60 * 24 * 7 // 7 days
-          : undefined,
+        maxAge: remember ? 60 * 60 * 24 * 7 : undefined, // 7 days for remember, session-only otherwise
       }),
     },
   });
 }
 
 export async function logout(request: Request) {
+  const session = await getSession(request);
+
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": await sessionStorage.commitSession(session, {
+        maxAge: 0,
+        expires: new Date(0), // Force the cookie to expire immediately
+      }),
+    },
+  });
+}
+
+
+// Clear session after registration
+export async function clearSessionAfterRegistration(request: Request) {
   const session = await getSession(request);
   return redirect("/", {
     headers: {
