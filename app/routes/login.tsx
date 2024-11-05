@@ -1,3 +1,4 @@
+// app/routes/login.tsx
 import type {
   ActionFunctionArgs,
   LoaderFunctionArgs,
@@ -9,7 +10,7 @@ import { useEffect, useRef } from "react";
 
 import { verifyLogin } from "~/models/user.server";
 import { createUserSession, getUserId } from "~/session.server";
-import { safeRedirect, validateEmail } from "~/utils";
+import { validateEmail } from "~/utils";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const userId = await getUserId(request);
@@ -21,7 +22,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
   const remember = formData.get("remember");
 
   if (!validateEmail(email)) {
@@ -53,6 +53,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       { status: 400 },
     );
   }
+
+  // Determine redirect based on user status
+  const redirectTo = user.status === "live" ? "/list" : "/";
 
   return createUserSession({
     redirectTo,

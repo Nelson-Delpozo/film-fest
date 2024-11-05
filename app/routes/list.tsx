@@ -1,7 +1,7 @@
 // app/routes/list.tsx
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 
 import { prisma } from "~/db.server";
@@ -137,6 +137,17 @@ export default function List() {
           </tbody>
         </table>
       </div>
+      <footer className="w-full border-t border-gray-700 py-4 text-center text-gray-800">
+        <p className="text-sm">
+          &copy; {new Date().getFullYear()}{" "}
+          <Link to="/" className="text-gray-800 underline">
+            MNFF
+          </Link>
+        </p>
+        <Link to="/logout" className="mt-1 block text-gray-800 underline">
+          Logout
+        </Link>
+      </footer>
     </div>
   );
 }
